@@ -32,19 +32,19 @@ public class App {
         return Integer.valueOf(port);
     }
     public static Javalin getApp() throws IOException, SQLException {
+        String databaseUrl = System.getenv()
+                .getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;");
         var hikariConfig = new HikariConfig();
-        hikariConfig.setJdbcUrl("jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;");
+        hikariConfig.setJdbcUrl(databaseUrl);
 
         var datasource = new HikariDataSource(hikariConfig);
         var sql = readResourceFile("schema.sql");
-
-
 
         var app = Javalin.create(config -> {
             config.plugins.enableDevLogging();
         })
                 .get("/", ctx -> ctx.result("Hello World"))
-                .start(7070);
+                .start(getPort());
         return app;
     }
 }

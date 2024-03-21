@@ -2,7 +2,11 @@ package hexlet.code;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import gg.jte.ContentType;
+import gg.jte.TemplateEngine;
+import gg.jte.resolve.ResourceCodeResolver;
 import io.javalin.Javalin;
+import io.javalin.rendering.template.JavalinJte;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
@@ -18,6 +22,13 @@ public class App {
     public static void main(String[] args) throws SQLException, IOException {
         var app = getApp();
         app.start(getPort());
+    }
+
+    private static TemplateEngine createTemplateEngine() {
+        ClassLoader classLoader = App.class.getClassLoader();
+        ResourceCodeResolver codeResolver = new ResourceCodeResolver("templates", classLoader);
+        TemplateEngine templateEngine = TemplateEngine.create(codeResolver, ContentType.Html);
+        return templateEngine;
     }
 
     private static String readResourceFile(String fileName) throws IOException {
@@ -42,6 +53,7 @@ public class App {
 
         var app = Javalin.create(config -> {
             config.plugins.enableDevLogging();
+            config.fileRenderer(new JavalinJte(createTemplateEngine()));
         })
                 .get("/", ctx -> ctx.result("Hello World"))
                 .start(getPort());

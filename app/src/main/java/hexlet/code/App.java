@@ -5,6 +5,10 @@ import com.zaxxer.hikari.HikariDataSource;
 import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 import gg.jte.resolve.ResourceCodeResolver;
+import hexlet.code.controller.RootController;
+import hexlet.code.controller.UrlController;
+import hexlet.code.repository.BaseRepository;
+import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinJte;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +46,7 @@ public class App {
         String port = System.getenv().getOrDefault("PORT", "7070");
         return Integer.valueOf(port);
     }
+
     public static Javalin getApp() throws IOException, SQLException {
         String databaseUrl = System.getenv()
                 .getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;");
@@ -51,12 +56,26 @@ public class App {
         var datasource = new HikariDataSource(hikariConfig);
         var sql = readResourceFile("schema.sql");
 
+        log.info(sql);
+        try (var connection = datasource.getConnection();
+             var statement = connection.createStatement()) {
+            statement.execute(sql);
+        }
+        BaseRepository.dataSource = datasource;
+
         var app = Javalin.create(config -> {
             config.plugins.enableDevLogging();
             config.fileRenderer(new JavalinJte(createTemplateEngine()));
-        })
-                .get("/", ctx -> ctx.result("Hello World"))
-                .start(getPort());
+        }).start(getPort());
+
+        app.before(ctx -> {
+            ctx.contentType("text/html; charset=utf-8");
+        });
+        app.get(NamedRoutes.rootPath(), RootController::index);
+        app.post(NamedRoutes.urlsPath(), UrlController::create);
+        app.get(NamedRoutes.urlsPath(), UrlController::index);
+        app.get(NamedRoutes.urlPath("{id}"), UrlController::show);
+
         return app;
     }
 }

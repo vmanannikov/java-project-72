@@ -1,6 +1,7 @@
 package hexlet.code.repository;
 
 import hexlet.code.model.Url;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -10,17 +11,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 public class UrlRepository extends BaseRepository{
     public static void save(Url url) throws SQLException {
         String sql = "INSERT INTO urls (name, created_at) values (?, ?)";
-
+        log.info(sql);
         try (var conn = dataSource.getConnection();
         var preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, url.getName());
             preparedStatement.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
             preparedStatement.executeUpdate();
             var generatedKeys = preparedStatement.getGeneratedKeys();
-
+            log.info(String.valueOf(generatedKeys));
             if (generatedKeys.next()) {
                 url.setId(generatedKeys.getLong(1));
             } else {
@@ -52,9 +54,10 @@ public class UrlRepository extends BaseRepository{
              var statement = conn.prepareStatement(sql)) {
              statement.setString(1, name);
              var resultSet = statement.executeQuery();
+             log.info(String.valueOf(resultSet));
              if (resultSet.next()) {
                  var id = resultSet.getLong("id");
-                 Timestamp createdAt = resultSet.getTimestamp("created_at");
+                 var createdAt = resultSet.getTimestamp("created_at");
                  var url = new Url(name);
                  url.setId(id);
                  url.setCreatedAt(createdAt);
@@ -70,6 +73,7 @@ public class UrlRepository extends BaseRepository{
              var statement = conn.prepareStatement(sql)) {
              var resultSet = statement.executeQuery();
              var result = new ArrayList<Url>();
+             log.info(String.valueOf(resultSet));
              while (resultSet.next()) {
                  var id = resultSet.getLong("id");
                  var name = resultSet.getString("name");

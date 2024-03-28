@@ -5,12 +5,9 @@ import hexlet.code.dto.urls.UrlPage;
 import hexlet.code.dto.urls.UrlsPage;
 import hexlet.code.model.Url;
 import hexlet.code.repository.UrlRepository;
-import hexlet.code.util.NamedRoutes;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
 import hexlet.code.util.Utils;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -21,8 +18,6 @@ import java.util.Collections;
 import java.util.Map;
 
 public class UrlController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(UrlController.class);
-
     public static void create(Context ctx) throws SQLException {
         var page = new BasePage();
         try {

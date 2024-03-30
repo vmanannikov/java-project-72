@@ -5,6 +5,7 @@ import hexlet.code.dto.urls.UrlPage;
 import hexlet.code.dto.urls.UrlsPage;
 import hexlet.code.model.Url;
 import hexlet.code.repository.UrlRepository;
+import hexlet.code.util.NamedRoutes;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
 import hexlet.code.util.Utils;
@@ -36,7 +37,7 @@ public class UrlController {
         } catch (MalformedURLException | URISyntaxException e) {
             page.setFlash("Некорректный URL");
             page.setFlashType("danger");
-            ctx.render("/");
+            ctx.render(NamedRoutes.rootPath());
         }
     }
 

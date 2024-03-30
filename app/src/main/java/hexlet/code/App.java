@@ -48,7 +48,6 @@ public class App {
     }
 
     public static Javalin getApp() throws IOException, SQLException {
-
         String databaseUrl = System.getenv()
                 .getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;");
         String databaseUsername = System.getenv()
@@ -65,6 +64,7 @@ public class App {
         var sql = readResourceFile("schema.sql");
 
         log.info(sql);
+
         try (var connection = datasource.getConnection();
              var statement = connection.createStatement()) {
             statement.execute(sql);
@@ -79,6 +79,7 @@ public class App {
         app.before(ctx -> {
             ctx.contentType("text/html; charset=utf-8");
         });
+
         app.get(NamedRoutes.rootPath(), RootController::index);
         app.post(NamedRoutes.urlsPath(), UrlController::create);
         app.get(NamedRoutes.urlsPath(), UrlController::index);

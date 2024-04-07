@@ -7,7 +7,7 @@ import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
@@ -15,10 +15,10 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public class AppTest {
-    static Javalin app;
+    Javalin app;
 
-    @BeforeAll
-    static final void setUp() throws SQLException, IOException {
+    @BeforeEach
+    final void setUp() throws SQLException, IOException {
         app = App.getApp();
     }
 
@@ -48,15 +48,15 @@ public class AppTest {
             var request = "url=https://urls-checker.onrender.com";
             client.post(NamedRoutes.urlsPath(), request);
             var response = client.get(NamedRoutes.urlsPath());
-            var body = response.body().string();
+            var responseBody = response.body().string();
 
             assertEquals("https://urls-checker.onrender.com",
                     UrlRepository.findByName("https://urls-checker.onrender.com")
                             .get()
                             .getName());
             assertThat(response.code()).isEqualTo(200);
-            assertThat(body).contains("Сайты");
-            assertThat(body).contains("https://urls-checker.onrender.com");
+            assertThat(responseBody).contains("Сайты");
+            assertThat(responseBody).contains("https://urls-checker.onrender.com");
         });
     }
 }

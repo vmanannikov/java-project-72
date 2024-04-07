@@ -50,7 +50,7 @@ public class UrlController {
     public static void show(Context ctx) throws SQLException {
         var id = ctx.pathParamAsClass("id", Long.class).get();
         var url = UrlRepository.findById(id)
-                .orElseThrow(() -> new NotFoundResponse("Сайт не найден"));
+                .orElseThrow(() -> new NotFoundResponse("Сайт не найден!"));
         var page = new UrlPage(url);
         ctx.render("urls/show.jte", Collections.singletonMap("page", page));
     }

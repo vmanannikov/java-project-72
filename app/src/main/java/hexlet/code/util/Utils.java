@@ -9,12 +9,11 @@ public class Utils {
         var port = url.getPort() == -1 ? "" : ":" + String.valueOf(url.getPort());
         String protocol = url.getProtocol();
         String authority = url.getAuthority();
-        var host = protocol.concat("://").concat(authority).concat(port);
-        return host;
+        return protocol.concat("://").concat(authority).concat(port);
     }
 
     public static Timestamp getDateFormat(Timestamp timestamp, String pattern) {
-        SimpleDateFormat formater = new SimpleDateFormat(pattern);
-        return Timestamp.valueOf(formater.format(timestamp));
+        SimpleDateFormat formatter = new SimpleDateFormat(pattern);
+        return Timestamp.valueOf(formatter.format(timestamp));
     }
 }

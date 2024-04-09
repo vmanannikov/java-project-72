@@ -29,14 +29,14 @@ public class Url {
 
     public Timestamp getLastCheck() {
         return urlCheckList.stream()
-                .sorted(Comparator.comparing(UrlCheck::getCreatedAt))
+                .sorted(Comparator.comparing(UrlCheck::getCreatedAt).reversed())
                 .collect(Collectors.toList())
                 .get(0).getCreatedAt();
     }
 
     public Integer getCheckStatusCode() {
         return urlCheckList.stream()
-                .sorted(Comparator.comparingInt(UrlCheck::getStatusCode))
+                .sorted(Comparator.comparingInt(UrlCheck::getStatusCode).reversed())
                 .collect(Collectors.toList())
                 .get(0).getStatusCode();
     }

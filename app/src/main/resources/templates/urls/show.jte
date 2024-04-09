@@ -1,33 +1,35 @@
+@import hexlet.code.dto.BasePage
 @import hexlet.code.dto.urls.UrlPage
 @import java.time.format.DateTimeFormatter
 
-@param UrlPage page
+@param BasePage page
+@param UrlPage urlPage
 
 @template.layout.page(
-page = null,
+page = page,
 content = @`
     <div class="container-lg mt-5">
 
-        <h1>Сайт ${page.getUrl().getName()}</h1>
+        <h1>Сайт ${urlPage.getUrl().getName()}</h1>
 
         <table class="table table-bordered table-hover mt-3">
             <tbody>
             <tr>
                 <td>ID</td>
-                <td>${page.getUrl().getId()}</td>
+                <td>${urlPage.getUrl().getId()}</td>
             </tr>
             <tr>
                 <td>Имя</td>
-                <td>${page.getUrl().getName()}</td>
+                <td>${urlPage.getUrl().getName()}</td>
             </tr>
             <tr>
                 <td>Дата создания</td>
-                <td>${page.getUrl().getCreatedAt().toLocalDateTime().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))}</td>
+                <td>${urlPage.getUrl().getCreatedAt().toLocalDateTime().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))}</td>
             </tr>
             </tbody>
         </table>
         <h2 class="mt-5">Проверки</h2>
-        <form method="post" action="/urls/${page.getUrl().getId()}/checks">
+        <form method="post" action="/urls/${urlPage.getUrl().getId()}/checks">
             <button type="submit" class="btn btn-primary">Запустить проверку</button>
         </form>
         <table class="table table-bordered table-hover mt-3">
@@ -40,8 +42,8 @@ content = @`
                 <th class="col-2">Дата проверки</th>
             </thead>
             <tbody>
-            @if(page.getUrl().getUrlCheckList() != null)
-                @for(var check : page.getUrl().getUrlCheckList())
+            @if(urlPage.getUrlChecks() != null)
+                @for(var check : urlPage.getUrlChecks())
                     <tr>
                         <td>${check.getId()}</td>
                         <td>${check.getStatusCode()}</td>

@@ -1,28 +1,30 @@
 package hexlet.code.repository;
 
 import hexlet.code.model.Url;
-import lombok.extern.slf4j.Slf4j;
+import hexlet.code.model.UrlCheck;
+import hexlet.code.util.Utils;
 
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Comparator;
 import java.util.Optional;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
-@Slf4j
 public class UrlRepository extends BaseRepository {
     public static void save(Url url) throws SQLException {
         String sql = "INSERT INTO urls (name, created_at) values (?, ?)";
-        log.info(sql);
         try (var conn = dataSource.getConnection();
             var preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            var timestamp = Utils.getDateFormat(Timestamp.valueOf(LocalDateTime.now()), "yyyy-MM-dd hh:mm:ss");
             preparedStatement.setString(1, url.getName());
-            preparedStatement.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
+            preparedStatement.setTimestamp(2, timestamp);
             preparedStatement.executeUpdate();
             var generatedKeys = preparedStatement.getGeneratedKeys();
-            log.info(String.valueOf(generatedKeys));
+
             if (generatedKeys.next()) {
                 url.setId(generatedKeys.getLong(1));
             } else {
@@ -34,7 +36,7 @@ public class UrlRepository extends BaseRepository {
     public static Optional<Url> findById(Long id) throws SQLException {
         var sql = "SELECT * FROM urls WHERE id = ?";
         try (var conn = dataSource.getConnection();
-             var statement = conn.prepareStatement(sql)) {
+            var statement = conn.prepareStatement(sql)) {
             statement.setLong(1, id);
             var resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -54,7 +56,7 @@ public class UrlRepository extends BaseRepository {
             var statement = conn.prepareStatement(sql)) {
             statement.setString(1, name);
             var resultSet = statement.executeQuery();
-            log.info(String.valueOf(resultSet));
+
             if (resultSet.next()) {
                 var id = resultSet.getLong("id");
                 var createdAt = resultSet.getTimestamp("created_at");
@@ -73,7 +75,7 @@ public class UrlRepository extends BaseRepository {
             var statement = conn.prepareStatement(sql)) {
             var resultSet = statement.executeQuery();
             var result = new ArrayList<Url>();
-            log.info(String.valueOf(resultSet));
+
             while (resultSet.next()) {
                 var id = resultSet.getLong("id");
                 var name = resultSet.getString("name");
@@ -82,6 +84,54 @@ public class UrlRepository extends BaseRepository {
                 url.setId(id);
                 result.add(url);
             }
+            return result.stream()
+                    .sorted(Comparator.comparing(Url::getId).reversed())
+                    .collect(Collectors.toList());
+        }
+    }
+
+    public static void saveCheck(UrlCheck urlCheck) throws SQLException {
+        String sql = "INSERT INTO url_checks (url_id, status_code, title, h1, description, created_at) " +
+                "values (?, ?, ?, ?, ?, ?)";
+        try (var conn = dataSource.getConnection();
+            var preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            var timestamp = Timestamp.valueOf(LocalDateTime.now());
+            var createdAt = Utils.getDateFormat(timestamp, "yyyy-MM-dd hh:mm:ss");
+            preparedStatement.setLong(1, urlCheck.getUrlId());
+            preparedStatement.setInt(2, urlCheck.getStatusCode());
+            preparedStatement.setString(3, urlCheck.getTitle());
+            preparedStatement.setString(4, urlCheck.getH1());
+            preparedStatement.setString(5, urlCheck.getDescription());
+            preparedStatement.setTimestamp(6, createdAt);
+            preparedStatement.executeUpdate();
+
+            var generatedKeys = preparedStatement.getGeneratedKeys();
+
+            if (generatedKeys.next()) {
+                urlCheck.setId(generatedKeys.getLong(1));
+            } else {
+                throw new SQLException("Произошла ошибка при извлечении идентификтора");
+            }
+        }
+    }
+
+    public static List<UrlCheck> findChecksById(Long urlId) throws SQLException {
+        var sql = "SELECT * FROM url_checks where url_id = ?";
+        try (var conn = dataSource.getConnection();
+        var statement = conn.prepareStatement(sql)) {
+            statement.setLong(1, urlId);
+            var resultSet = statement.executeQuery();
+            var result = new ArrayList<UrlCheck>();
+
+            while (resultSet.next()) {
+                var id = resultSet.getLong("id");
+                var statusCode = resultSet.getInt("status_code");
+                var created = resultSet.getTimestamp("created_at");
+                var urlChecks = new UrlCheck(statusCode, created);
+                urlChecks.setId(id);
+                result.add(urlChecks);
+            }
+
             return result;
         }
     }

@@ -7,19 +7,26 @@ import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
 
 import java.io.IOException;
 import java.sql.SQLException;
 
 public class AppTest {
     Javalin app;
+    MockWebServer mockWebServer;
+    MockResponse mockResponse;
 
-    @BeforeEach
+    @BeforeAll
     final void setUp() throws SQLException, IOException {
         app = App.getApp();
+        mockWebServer.start();
     }
 
     @Test

@@ -4,18 +4,24 @@ import hexlet.code.dto.BasePage;
 import hexlet.code.dto.urls.UrlPage;
 import hexlet.code.dto.urls.UrlsPage;
 import hexlet.code.model.Url;
+import hexlet.code.model.UrlCheck;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
 import hexlet.code.util.Utils;
+import kong.unirest.HttpResponse;
+import kong.unirest.Unirest;
+import kong.unirest.UnirestException;
 
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public class UrlController {
@@ -51,7 +57,30 @@ public class UrlController {
         var id = ctx.pathParamAsClass("id", Long.class).get();
         var url = UrlRepository.findById(id)
                 .orElseThrow(() -> new NotFoundResponse("Сайт не найден!"));
-        var page = new UrlPage(url);
-        ctx.render("urls/show.jte", Collections.singletonMap("page", page));
+        var checks = UrlRepository.findChecksById(id);
+        var urlPage = new UrlPage(url, checks);
+        ctx.render("urls/show.jte", Collections.singletonMap("urlPage", urlPage));
+    }
+
+    public static void check(Context ctx) throws SQLException {
+        var id = ctx.pathParamAsClass("id", Long.class).get();
+        var url = UrlRepository.findById(id)
+                .orElseThrow(() -> new NotFoundResponse("Сайт не найден"));
+        var page = new BasePage();
+        List<UrlCheck> checks = new ArrayList<>();
+        try {
+            HttpResponse<String> response = Unirest.get(url.getName()).asString();
+            var statusCode = response.getStatus();
+            var urlCheck = new UrlCheck(statusCode, url.getCreatedAt(), url.getId());
+            UrlRepository.saveCheck(urlCheck);
+            checks = UrlRepository.findChecksById(url.getId());
+            page.setFlash("Страница успешно проверена");
+            page.setFlashType("success");
+        } catch (UnirestException e) {
+            page.setFlash("Некорреткный адрес");
+            page.setFlashType("danger");
+        }
+        var urlPage = new UrlPage(url, checks);
+        ctx.render("urls/show.jte", Map.of("page", page, "urlPage", urlPage));
     }
 }

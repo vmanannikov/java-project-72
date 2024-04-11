@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public final class AppTest {
+
     Javalin app;
     MockWebServer mockWebServer;
     MockResponse mockResponse;

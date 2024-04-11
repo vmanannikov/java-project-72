@@ -19,7 +19,7 @@ import java.sql.SQLException;
 public class App {
 
     public static void main(String[] args) throws SQLException, IOException {
-        getApp();
+        getApp().start(Utils.getPort());
     }
 
     public static Javalin getApp() throws IOException, SQLException {
@@ -49,7 +49,7 @@ public class App {
         var app = Javalin.create(config -> {
             config.plugins.enableDevLogging();
             config.fileRenderer(new JavalinJte(Utils.createTemplateEngine()));
-        }).start(Utils.getPort());
+        });
 
         app.before(ctx -> {
             ctx.contentType("text/html; charset=utf-8");

@@ -32,12 +32,12 @@
                                 </td>
                                 <td>
                                     @if(url.getUrlCheckList() != null)
-                                        ${url.getLastCheck().toLocalDateTime().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))}
+                                        ${url.getLastDateCheck().toLocalDateTime().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))}
                                     @endif
                                 </td>
                                 <td>
                                     @if(url.getUrlCheckList() != null)
-                                        ${url.getCheckStatusCode()}
+                                        ${url.getLastStatusCodeCheck()}
                                     @endif
                                 </td>
                             </tr>

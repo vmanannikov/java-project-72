@@ -31,14 +31,14 @@ public final class JteindexGenerated {
 					if (url.getUrlCheckList() != null) {
 						jteOutput.writeContent("\n                                        ");
 						jteOutput.setContext("td", null);
-						jteOutput.writeUserContent(url.getLastCheck().toLocalDateTime().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")));
+						jteOutput.writeUserContent(url.getLastDateCheck().toLocalDateTime().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")));
 						jteOutput.writeContent("\n                                    ");
 					}
 					jteOutput.writeContent("\n                                </td>\n                                <td>\n                                    ");
 					if (url.getUrlCheckList() != null) {
 						jteOutput.writeContent("\n                                        ");
 						jteOutput.setContext("td", null);
-						jteOutput.writeUserContent(url.getCheckStatusCode());
+						jteOutput.writeUserContent(url.getLastStatusCodeCheck());
 						jteOutput.writeContent("\n                                    ");
 					}
 					jteOutput.writeContent("\n                                </td>\n                            </tr>\n                        ");

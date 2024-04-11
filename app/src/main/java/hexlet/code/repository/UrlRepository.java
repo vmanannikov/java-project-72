@@ -91,8 +91,8 @@ public class UrlRepository extends BaseRepository {
     }
 
     public static void saveCheck(UrlCheck urlCheck) throws SQLException {
-        String sql = "INSERT INTO url_checks (url_id, status_code, title, h1, description, created_at) " +
-                "values (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO url_checks (url_id, status_code, title, h1, description, created_at) "
+                + "values (?, ?, ?, ?, ?, ?)";
         try (var conn = dataSource.getConnection();
             var preparedStatement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             var timestamp = Timestamp.valueOf(LocalDateTime.now());
@@ -118,7 +118,7 @@ public class UrlRepository extends BaseRepository {
     public static List<UrlCheck> findChecksById(Long urlId) throws SQLException {
         var sql = "SELECT * FROM url_checks where url_id = ?";
         try (var conn = dataSource.getConnection();
-        var statement = conn.prepareStatement(sql)) {
+            var statement = conn.prepareStatement(sql)) {
             statement.setLong(1, urlId);
             var resultSet = statement.executeQuery();
             var result = new ArrayList<UrlCheck>();
@@ -133,6 +133,26 @@ public class UrlRepository extends BaseRepository {
             }
 
             return result;
+        }
+    }
+
+    public static UrlCheck findLastCheckById(Long urlId) throws SQLException {
+        var sql = "SELECT * FROM url_checks where url_id = ? ORDER BY created_at DESC LIMIT 1";
+        try (var conn = dataSource.getConnection();
+             var statement = conn.prepareStatement(sql)) {
+            statement.setLong(1, urlId);
+            var resultSet = statement.executeQuery();
+            UrlCheck urlCheck = null;
+
+            if (resultSet.next()) {
+                var id = resultSet.getLong("id");
+                var statusCode = resultSet.getInt("status_code");
+                var created = resultSet.getTimestamp("created_at");
+                urlCheck = new UrlCheck(statusCode, created);
+                urlCheck.setId(id);
+            }
+
+            return urlCheck;
         }
     }
 }

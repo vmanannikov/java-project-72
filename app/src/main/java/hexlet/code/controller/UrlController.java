@@ -49,6 +49,21 @@ public class UrlController {
 
     public static void index(Context ctx) throws SQLException {
         var urls = UrlRepository.getEntities();
+        urls.forEach(
+                url -> {
+                    try {
+                        var urlChecks = UrlRepository.findChecksById(url.getId());
+                        var lastCheck = UrlRepository.findLastCheckById(url.getId());
+                        if (lastCheck != null) {
+                            url.setUrlCheckList(urlChecks);
+                            url.setLastDateCheck(lastCheck.getCreatedAt());
+                            url.setLastStatusCodeCheck(lastCheck.getStatusCode());
+                        }
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+        );
         var urlsPage = new UrlsPage(urls);
         ctx.render("urls/index.jte", Collections.singletonMap("urlsPage", urlsPage));
     }

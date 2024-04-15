@@ -10,10 +10,10 @@ import hexlet.code.util.NamedRoutes;
 import hexlet.code.util.Utils;
 import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -31,6 +31,15 @@ public final class AppTest {
     @BeforeEach
     void setUp() throws SQLException, IOException {
         app = App.getApp();
+    }
+
+    @AfterEach
+    void tearDown() {
+        app.stop();
+
+        if (BaseRepository.dataSource != null) {
+            BaseRepository.dataSource.close();
+        }
     }
 
     @Test
@@ -126,14 +135,5 @@ public final class AppTest {
         });
 
         mockWebServer.close();
-    }
-
-    @AfterEach
-    void tearDown() {
-        app.stop();
-
-        if (BaseRepository.dataSource != null) {
-            BaseRepository.dataSource.close();
-        }
     }
 }

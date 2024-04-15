@@ -53,10 +53,6 @@ public class App {
             config.fileRenderer(new JavalinJte(Utils.createTemplateEngine()));
         });
 
-        app.before(ctx -> {
-            ctx.contentType("text/html; charset=utf-8");
-        });
-
         app.get(NamedRoutes.rootPath(), RootController::index);
         app.post(NamedRoutes.urlsPath(), UrlController::create);
         app.get(NamedRoutes.urlsPath(), UrlController::index);

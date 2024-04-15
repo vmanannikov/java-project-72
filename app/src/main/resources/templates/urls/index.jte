@@ -24,12 +24,8 @@
                         <tbody>
                         @for(var url : urlsPage.getUrls())
                             <tr>
-                                <td>
-                                    ${url.getId()}
-                                </td>
-                                <td>
-                                    <a href="${NamedRoutes.urlPath(url.getId())}">${url.getName()}</a>
-                                </td>
+                                <td>${url.getId()}</td>
+                                <td><a href="${NamedRoutes.urlPath(url.getId())}">${url.getName()}</a></td>
                                 <td>
                                     @if(url.getUrlCheckList() != null)
                                         ${url.getLastDateCheck().toLocalDateTime().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))}

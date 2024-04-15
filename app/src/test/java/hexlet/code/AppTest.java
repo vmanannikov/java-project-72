@@ -3,6 +3,7 @@ package hexlet.code;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import hexlet.code.model.Url;
 import hexlet.code.repository.BaseRepository;
 import hexlet.code.repository.UrlRepository;
 import hexlet.code.util.NamedRoutes;
@@ -19,6 +20,7 @@ import okhttp3.mockwebserver.MockWebServer;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 public final class AppTest {
 
@@ -71,42 +73,63 @@ public final class AppTest {
 
     @Test
     @Order(4)
+    public void testUrlPage() throws SQLException {
+        var url = new Url("https://google.com", new Timestamp(System.currentTimeMillis()));
+        UrlRepository.save(url);
+        JavalinTest.test(app, (server, client) -> {
+            var response = client.get(NamedRoutes.urlsPath());
+            assertThat(response.code()).isEqualTo(200);
+            var responseUrl = client.get(NamedRoutes.urlPath(url.getId()));
+            var body = responseUrl.body().string();
+            assertThat(responseUrl.code()).isEqualTo(200);
+            assertThat(body.contains("Сайт: https://google.com"));
+            assertThat(body.contains("Проверки"));
+        });
+    }
+
+    @Test
+    @Order(5)
+    public void testServerError() {
+        JavalinTest.test(app, ((server, client) -> {
+            var response = client.get("/urls/000");
+            assertThat(response.code()).isEqualTo(404);
+        }));
+    }
+
+    @Test
+    @Order(6)
     void testMockRequest() throws IOException {
-        var htmlPage = Utils.readResourceFile("fixtures/mock_url_check.html");
+        var htmlResponse = Utils.readResourceFile("fixtures/mock_url_check.html");
         mockWebServer = new MockWebServer();
-        mockResponse = new MockResponse().setBody(htmlPage);
+        mockResponse = new MockResponse()
+                .setBody(htmlResponse)
+                .setResponseCode(200);
         mockWebServer.enqueue(mockResponse);
         mockWebServer.start();
 
         var mockUrl = mockWebServer.url("/").toString();
 
         JavalinTest.test(app, (server, client) -> {
-            var requestBody = "url=" + mockUrl;
-            var response = client.post("/urls", requestBody);
-            assertThat(response.code()).isEqualTo(200);
+            var addedUrl = new Url(mockUrl);
+            UrlRepository.save(addedUrl);
 
-            var urlName = String.format("%s://%s", mockWebServer.url("/").url().getProtocol(),
-                    mockWebServer.url("/").url().getAuthority());
-            var addUrl = UrlRepository.findByName(urlName);
-            assertThat(addUrl).isNotNull();
+            var id = addedUrl.getId();
+            client.post(NamedRoutes.urlCheckPath(id));
+            var checks = UrlRepository.findChecksById(id);
 
-            //var response2 = client.post("/urls/" + addUrl.get().getId() + "/checks");
-            //assertThat(response2.code()).isEqualTo(200);
+            var title = checks.get(0).getTitle();
+            var h1 = checks.get(0).getH1();
 
-            //var urlCheck = UrlRepository.findChecksById(addUrl.get().getId());
-            //var title = urlCheck.get(0).getTitle();
-            //var h1 = urlCheck.get(0).getH1();
-            //var description = urlCheck.get(0).getDescription();
+            assertThat(title).isEqualTo("Анализатор страниц");
+            assertThat(h1).isEqualTo("Сайт https://www.example.com");
 
-            //assertThat(title).as("Check title").isEqualTo("This is a title");
-            //assertThat(h1).as("Check h1").isEqualTo("This is a header");
-            //assertThat(description).as("Check description").isEqualTo("This is a description");
-            mockWebServer.close();
         });
+
+        mockWebServer.close();
     }
 
     @AfterEach
-    void tearDown() throws IOException {
+    void tearDown() {
         app.stop();
 
         if (BaseRepository.dataSource != null) {

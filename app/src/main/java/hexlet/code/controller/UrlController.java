@@ -10,9 +10,9 @@ import hexlet.code.util.NamedRoutes;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
 import hexlet.code.util.Utils;
-import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestException;
+import org.jsoup.Jsoup;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -84,9 +84,17 @@ public class UrlController {
         var page = new BasePage();
         List<UrlCheck> checks = new ArrayList<>();
         try {
-            HttpResponse<String> response = Unirest.get(url.getName()).asString();
+            var response = Unirest.get(url.getName()).asString();
+            var body = response.getBody();
+            var html = Jsoup.parse(body);
+            var title = html.title();
+            var h1 = (html.selectFirst("h1") == null)
+                    ? null : html.selectFirst("h1").text();
+            var description = (html.selectFirst("meta[name=description]") == null)
+                    ? null : html.selectFirst("meta[name=description]").attr("content");
             var statusCode = response.getStatus();
-            var urlCheck = new UrlCheck(statusCode, url.getCreatedAt(), url.getId());
+            var urlCheck = new UrlCheck(statusCode, title, h1, description, id, url.getCreatedAt());
+            urlCheck.setUrlId(id);
             UrlRepository.saveCheck(urlCheck);
             checks = UrlRepository.findChecksById(url.getId());
             page.setFlash("Страница успешно проверена");

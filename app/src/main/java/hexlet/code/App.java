@@ -47,7 +47,9 @@ public class App {
         BaseRepository.dataSource = datasource;
 
         var app = Javalin.create(config -> {
-            config.plugins.enableDevLogging();
+            if (databaseUrl.contains("h2")) {
+                config.plugins.enableDevLogging();
+            }
             config.fileRenderer(new JavalinJte(Utils.createTemplateEngine()));
         });
 

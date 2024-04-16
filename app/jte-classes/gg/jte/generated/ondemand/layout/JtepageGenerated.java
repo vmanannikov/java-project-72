@@ -4,7 +4,7 @@ import gg.jte.Content;
 import hexlet.code.util.NamedRoutes;
 public final class JtepageGenerated {
 	public static final String JTE_NAME = "layout/page.jte";
-	public static final int[] JTE_LINE_INFO = {0,0,1,2,3,3,3,20,20,20,20,20,20,20,20,20,20,27,27,27,27,27,27,27,27,27,28,28,28,28,28,28,28,28,28,35,35,36,36,36,36,37,37,37,40,40,42,42,42,55};
+	public static final int[] JTE_LINE_INFO = {0,0,1,2,3,3,3,20,20,20,20,20,20,20,20,20,20,27,27,27,27,27,27,27,27,27,28,28,28,28,28,28,28,28,28,35,35,36,36,36,36,37,37,37,40,40,42,42,42,55,55,55,3,4,4,4,4};
 	public static void render(gg.jte.html.HtmlTemplateOutput jteOutput, gg.jte.html.HtmlInterceptor jteHtmlInterceptor, Content content, BasePage page) {
 		jteOutput.writeContent("\n<head>\n    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n    <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css\" rel=\"stylesheet\"\n          integrity=\"sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65\" crossorigin=\"anonymous\">\n    <script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js\"\n            integrity=\"sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4\"\n            crossorigin=\"anonymous\"></script>\n    <title>Анализатор страниц</title>\n</head>\n\n<body class=\"d-flex flex-column min-vh-100\">\n    <nav class=\"navbar navbar-expand-lg navbar-dark bg-dark\">\n        <div class=\"container-fluid\">\n            <a class=\"navbar-brand\"");
 		var __jte_html_attribute_0 = NamedRoutes.rootPath();

@@ -5,7 +5,7 @@ import hexlet.code.util.NamedRoutes;
 import java.time.format.DateTimeFormatter;
 public final class JteindexGenerated {
 	public static final String JTE_NAME = "urls/index.jte";
-	public static final int[] JTE_LINE_INFO = {0,0,1,2,3,4,4,4,7,7,10,10,25,25,27,27,27,28,28,28,28,28,28,28,28,28,28,28,28,30,30,31,31,31,32,32,35,35,36,36,36,37,37,40,40,46,46,46};
+	public static final int[] JTE_LINE_INFO = {0,0,1,2,3,4,4,4,7,7,10,10,25,25,27,27,27,28,28,28,28,28,28,28,28,28,28,28,28,30,30,31,31,31,32,32,35,35,36,36,36,37,37,40,40,46,46,46,46,46,4,5,5,5,5};
 	public static void render(gg.jte.html.HtmlTemplateOutput jteOutput, gg.jte.html.HtmlInterceptor jteHtmlInterceptor, BasePage page, UrlsPage urlsPage) {
 		jteOutput.writeContent("\n");
 		gg.jte.generated.ondemand.layout.JtepageGenerated.render(jteOutput, jteHtmlInterceptor, new gg.jte.html.HtmlContent() {

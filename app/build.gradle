@@ -30,7 +30,7 @@ repositories {
 }
 
 compileJava {
-    options.release = 19
+    options.release = 21
 }
 
 dependencies {

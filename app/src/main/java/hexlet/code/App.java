@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.sql.SQLException;
 
+
 @Slf4j
 public class App {
 
@@ -46,8 +47,8 @@ public class App {
         BaseRepository.dataSource = datasource;
 
         var app = Javalin.create(config -> {
-            if (databaseUrl.contains("h2")) {
-                config.plugins.enableDevLogging();
+            if (databaseUrl.contains("h2:mem")) {
+                config.bundledPlugins.enableDevLogging();
             }
             config.fileRenderer(new JavalinJte(Utils.createTemplateEngine()));
         });

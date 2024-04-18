@@ -143,22 +143,22 @@ public class UrlRepository extends BaseRepository {
         var sql = "SELECT * FROM url_checks WHERE url_id = ? ORDER BY created_at DESC LIMIT 1";
         try (var conn = dataSource.getConnection();
              var statement = conn.prepareStatement(sql)) {
-             var listChecks = new ArrayList<UrlCheck>();
-             for (var url : urls) {
-                 statement.setLong(1, url.getId());
-                 var resultSet = statement.executeQuery();
+            var listChecks = new ArrayList<UrlCheck>();
+            for (var url : urls) {
+                statement.setLong(1, url.getId());
+                var resultSet = statement.executeQuery();
 
-                 if (resultSet.next()) {
-                     var statusCode = resultSet.getInt("status_code");
-                     var created = resultSet.getTimestamp("created_at");
-                     url.setLastStatusCodeCheck(statusCode);
-                     url.setLastDateCheck(created);
-                     listChecks.add(new UrlCheck(statusCode, created));
-                 }
-                 url.setUrlCheckList(listChecks);
-             }
+                if (resultSet.next()) {
+                    var statusCode = resultSet.getInt("status_code");
+                    var created = resultSet.getTimestamp("created_at");
+                    url.setLastStatusCodeCheck(statusCode);
+                    url.setLastDateCheck(created);
+                    listChecks.add(new UrlCheck(statusCode, created));
+                }
+                url.setUrlCheckList(listChecks);
+            }
 
-             return urls;
+            return urls;
         }
     }
 }

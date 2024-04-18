@@ -116,7 +116,7 @@ public class UrlRepository extends BaseRepository {
     }
 
     public static List<UrlCheck> findChecksById(Long urlId) throws SQLException {
-        var sql = "SELECT * FROM url_checks where url_id = ?";
+        var sql = "SELECT * FROM url_checks where url_id = ? ORDER BY created_at DESC";
         try (var conn = dataSource.getConnection();
             var statement = conn.prepareStatement(sql)) {
             statement.setLong(1, urlId);
@@ -139,23 +139,26 @@ public class UrlRepository extends BaseRepository {
         }
     }
 
-    public static UrlCheck findLastCheckById(Long urlId) throws SQLException {
-        var sql = "SELECT * FROM url_checks where url_id = ? ORDER BY created_at DESC LIMIT 1";
+    public static List<Url> findLastCheck(List<Url> urls) throws SQLException {
+        var sql = "SELECT * FROM url_checks WHERE url_id = ? ORDER BY created_at DESC LIMIT 1";
         try (var conn = dataSource.getConnection();
              var statement = conn.prepareStatement(sql)) {
-            statement.setLong(1, urlId);
-            var resultSet = statement.executeQuery();
-            UrlCheck urlCheck = null;
+             var listChecks = new ArrayList<UrlCheck>();
+             for (var url : urls) {
+                 statement.setLong(1, url.getId());
+                 var resultSet = statement.executeQuery();
 
-            if (resultSet.next()) {
-                var id = resultSet.getLong("id");
-                var statusCode = resultSet.getInt("status_code");
-                var created = resultSet.getTimestamp("created_at");
-                urlCheck = new UrlCheck(statusCode, created);
-                urlCheck.setId(id);
-            }
+                 if (resultSet.next()) {
+                     var statusCode = resultSet.getInt("status_code");
+                     var created = resultSet.getTimestamp("created_at");
+                     url.setLastStatusCodeCheck(statusCode);
+                     url.setLastDateCheck(created);
+                     listChecks.add(new UrlCheck(statusCode, created));
+                 }
+                 url.setUrlCheckList(listChecks);
+             }
 
-            return urlCheck;
+             return urls;
         }
     }
 }

@@ -19,10 +19,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class UrlController {
     public static void create(Context ctx) throws SQLException {
@@ -49,22 +46,8 @@ public class UrlController {
 
     public static void index(Context ctx) throws SQLException {
         var urls = UrlRepository.getEntities();
-        urls.forEach(
-                url -> {
-                    try {
-                        var urlChecks = UrlRepository.findChecksById(url.getId());
-                        var lastCheck = UrlRepository.findLastCheckById(url.getId());
-                        if (lastCheck != null) {
-                            url.setUrlCheckList(urlChecks);
-                            url.setLastDateCheck(lastCheck.getCreatedAt());
-                            url.setLastStatusCodeCheck(lastCheck.getStatusCode());
-                        }
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-        );
-        var urlsPage = new UrlsPage(urls);
+        var urlsWithCheck = UrlRepository.findLastCheck(urls);
+        var urlsPage = new UrlsPage(urlsWithCheck);
         ctx.render("urls/index.jte", Collections.singletonMap("urlsPage", urlsPage));
     }
 

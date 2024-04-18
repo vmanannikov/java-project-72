@@ -151,11 +151,11 @@ public class UrlRepository extends BaseRepository {
                 if (resultSet.next()) {
                     var statusCode = resultSet.getInt("status_code");
                     var created = resultSet.getTimestamp("created_at");
+                    listChecks.add(new UrlCheck(statusCode, created));
                     url.setLastStatusCodeCheck(statusCode);
                     url.setLastDateCheck(created);
-                    listChecks.add(new UrlCheck(statusCode, created));
+                    url.setUrlCheckList(listChecks);
                 }
-                url.setUrlCheckList(listChecks);
             }
 
             return urls;

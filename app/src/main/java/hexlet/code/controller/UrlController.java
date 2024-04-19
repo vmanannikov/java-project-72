@@ -18,7 +18,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +33,7 @@ public class UrlController {
                 page.setFlash("Страница уже существует");
                 page.setFlashType("warning");
             } else {
-                var urlName = new Url(url, new Timestamp(System.currentTimeMillis()));
+                var urlName = new Url(url);
                 UrlRepository.save(urlName);
                 page.setFlash("Страница успешно добавлена");
                 page.setFlashType("success");

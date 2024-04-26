@@ -6,7 +6,6 @@ import hexlet.code.dto.urls.UrlsPage;
 import hexlet.code.model.Url;
 import hexlet.code.model.UrlCheck;
 import hexlet.code.repository.UrlRepository;
-import hexlet.code.util.NamedRoutes;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
 import hexlet.code.util.Utils;
@@ -29,6 +28,7 @@ public class UrlController {
         try {
             var url = ctx.formParamAsClass("url", String.class).get();
             var formattedUrl = Utils.formatURL(new URI(url).toURL());
+
             if (UrlRepository.findByName(formattedUrl).isPresent()) {
                 page.setFlash("Страница уже существует");
                 page.setFlashType("warning");
@@ -38,11 +38,16 @@ public class UrlController {
                 page.setFlash("Страница успешно добавлена");
                 page.setFlashType("success");
             }
-            ctx.render("urls/index.jte", Map.of("page", page, "urlsPage", new UrlsPage(UrlRepository.getEntities())));
+
+            var urls = UrlRepository.getEntities();
+            var urlsWithCheck = UrlRepository.findLastCheck(urls);
+            var urlsPage = new UrlsPage(urlsWithCheck);
+
+            ctx.render("urls/index.jte", Map.of("page", page, "urlsPage", urlsPage));
         } catch (MalformedURLException | URISyntaxException e) {
             page.setFlash("Некорректный URL");
             page.setFlashType("danger");
-            ctx.render(NamedRoutes.rootPath());
+            ctx.render("index.jte", Collections.singletonMap("page", page));
         }
     }
 

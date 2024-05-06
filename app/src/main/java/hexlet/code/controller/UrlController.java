@@ -33,7 +33,7 @@ public class UrlController {
                 page.setFlash("Страница уже существует");
                 page.setFlashType("warning");
             } else {
-                var urlName = new Url(url);
+                var urlName = new Url(formattedUrl);
                 UrlRepository.save(urlName);
                 page.setFlash("Страница успешно добавлена");
                 page.setFlashType("success");

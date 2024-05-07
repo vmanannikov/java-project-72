@@ -12,6 +12,7 @@ import kong.unirest.Unirest;
 import kong.unirest.UnirestException;
 import org.jsoup.Jsoup;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
@@ -25,8 +26,8 @@ public class UrlController {
         var page = new BasePage();
         try {
             var url = ctx.formParamAsClass("url", String.class).get();
-            var uri = new URI(url);
-            String protocol = uri.getScheme();
+            var uri = new URI(url).toURL();
+            String protocol = uri.getProtocol();
             String authority = uri.getAuthority();
             var formattedUrl = String.format("%s://%s", protocol, authority);
 
@@ -45,7 +46,7 @@ public class UrlController {
             var urlsPage = new UrlsPage(urlsWithCheck);
 
             ctx.render("urls/index.jte", Map.of("page", page, "urlsPage", urlsPage));
-        } catch (URISyntaxException e) {
+        } catch (MalformedURLException | URISyntaxException e) {
             page.setFlash("Некорректный URL");
             page.setFlashType("danger");
             ctx.render("index.jte", Collections.singletonMap("page", page));

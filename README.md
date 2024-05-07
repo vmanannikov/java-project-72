@@ -14,6 +14,7 @@
 ### Технологии:
 
 + Java
++ Gradle
 + Javalin
 + H2, PostgreSQL
 + Lombok
